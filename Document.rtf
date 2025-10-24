@@ -1,0 +1,154 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9 2.3 Menulis aplikasi Django pertama Anda, bagian 1\par
+Mari belajar melalui contoh.\par
+Di sepanjang tutorial ini, kami akan memandu Anda membuat aplikasi jajak pendapat dasar.\par
+Tutorial ini terdiri dari dua bagian:\par
+Dokumentasi Django, Rilis 5.2.8.dev20251023141420\par
+\f1\bullet  Situs publik yang memungkinkan orang melihat dan memberikan suara di jajak pendapat tersebut.\par
+\bullet  Situs admin yang memungkinkan Anda menambah, mengubah, dan menghapus jajak pendapat.\par
+Kami berasumsi Anda sudah memasang Django. Anda dapat mengetahui Django terpasang dan versinya dengan\par
+menjalankan perintah berikut di prompt shell (ditunjukkan dengan awalan $):\par
+$ python -m django --version\par
+Jika Django terinstal, Anda akan melihat versi instalasi Anda. Jika tidak, Anda akan mendapatkan pesan kesalahan "Tidak ada\par
+modul bernama django".\par
+Tutorial ini ditulis untuk Django 5.2, yang mendukung Python 3.10 dan yang lebih baru. Jika versi Django tidak\par
+cocok, Anda dapat merujuk ke tutorial untuk versi Django Anda dengan menggunakan pengalih versi di pojok kanan bawah\par
+halaman ini, atau memperbarui Django ke versi terbaru. Jika Anda menggunakan Python versi lama,\par
+periksa Versi Python apa yang dapat saya gunakan dengan Django? untuk menemukan versi Django yang kompatibel.\par
+\f0\'ae Tempat mendapatkan bantuan\par
+Jika Anda mengalami kesulitan dalam mengikuti tutorial ini, silakan kunjungi bagian Mendapatkan Bantuan di\par
+FAQ.\par
+2.3.1 Membuat proyek\par
+Jika ini pertama kalinya Anda menggunakan Django, Anda perlu melakukan beberapa pengaturan awal. Yaitu, Anda perlu\par
+membuat kode secara otomatis yang membentuk proyek Django \f1\endash  kumpulan pengaturan untuk instans Django,\par
+termasuk konfigurasi basis data, opsi khusus Django, dan pengaturan khusus aplikasi.\par
+Dari baris perintah, ketik cd ke direktori tempat Anda ingin menyimpan kode dan buat direktori baru\par
+bernama djangotutorial. (Nama direktori ini tidak penting bagi Django; Anda dapat mengganti namanya menjadi apa pun\par
+yang Anda inginkan.)\par
+\f0 $ mkdir djangotutorial\par
+Kemudian, jalankan perintah berikut untuk bootstrap proyek Django baru:\par
+$ django-admin startproject mysite djangotutorial\par
+Ini akan membuat proyek bernama mysite di dalam direktori djangotutorial. Jika tidak berhasil, lihat Masalah\par
+menjalankan django-admin.\par
+\'ae Catatan\par
+Anda harus menghindari penamaan proyek dengan nama komponen bawaan Python atau Django. Khususnya, ini\par
+berarti Anda harus menghindari penggunaan nama seperti django (yang akan berkonflik dengan Django itu sendiri) atau test (yang\par
+conflicts with a built-in Python package).\par
+Mari kita lihat apa yang dibuat oleh startproject:\par
+djangotutorial/\par
+manage.py\par
+mysite/\par
+\tab __init__.py\par
+\tab settings.py\par
+\tab urls.py\par
+\tab asgi.py\par
+\tab wsgi.py\par
+Berkas-berkas ini adalah:\par
+\f1\bullet  manage.py: Utilitas baris perintah yang memungkinkan Anda berinteraksi dengan proyek Django ini dengan berbagai cara.\par
+Anda dapat membaca semua detail tentang manage.py di django-admin dan manage.py.\par
+\bullet  mysite/: Direktori yang merupakan paket Python sebenarnya untuk proyek Anda. Namanya adalah nama paket Python\par
+yang perlu Anda gunakan untuk mengimpor apa pun di dalamnya (misalnya mysite.urls).\par
+\bullet  mysite/__init__.py: Berkas kosong yang memberi tahu Python bahwa direktori ini harus dianggap sebagai paket Python. Jika Anda seorang pemula dalam Python, baca selengkapnya tentang paket di dokumen resmi Python.\par
+\bullet  mysite/settings.py: Pengaturan/konfigurasi untuk proyek Django ini. Pengaturan Django akan memberi tahu Anda\par
+semua tentang cara kerja pengaturan.\par
+\bullet  mysite/urls.py: Deklarasi URL untuk proyek Django ini; sebuah "daftar isi" situs Anda yang didukung Django. Anda dapat membaca lebih lanjut tentang URL di URL Dispatcher.\par
+\bullet  mysite/asgi.py: Titik masuk untuk server web yang kompatibel dengan ASGI untuk melayani proyek Anda. Lihat Cara\par
+men-deploy dengan ASGI untuk detail selengkapnya.\par
+\bullet  mysite/wsgi.py: Titik masuk untuk server web yang kompatibel dengan WSGI untuk melayani proyek Anda. Lihat Cara\par
+men-deploy dengan WSGI untuk detail selengkapnya.\par
+2.3.2 Server Pengembangan\par
+Mari kita verifikasi apakah proyek Django Anda berfungsi. Masuk ke direktori djangotutorial, jika Anda belum melakukannya,\par
+dan jalankan perintah berikut:\par
+$ python manage.py runserver\par
+Anda akan melihat output berikut pada baris perintah:\par
+Melakukan pemeriksaan sistem...\par
+Dokumentasi Django, Rilis 5.2.8.dev20251023141420\par
+Pemeriksaan sistem tidak menemukan masalah (0 dinonaktifkan).\par
+Anda memiliki migrasi yang belum diterapkan; aplikasi Anda mungkin tidak berfungsi dengan baik hingga migrasi tersebut diterapkan.\par
+Jalankan 'python manage.py migrate' untuk menerapkannya.\par
+23 Oktober 2025 - 15:50:53\par
+Django versi 5.2, menggunakan pengaturan 'mysite.settings'\par
+Memulai server pengembangan di {{\field{\*\fldinst{HYPERLINK http://127.0.0.1:8000/ }}{\fldrslt{http://127.0.0.1:8000/\ul0\cf0}}}}\f1\fs22\par
+Keluar dari server dengan CONTROL-C.\par
+PERINGATAN: Ini adalah server pengembangan. Jangan gunakan dalam pengaturan produksi. Gunakan server WSGI atau ASGI produksi.\par
+Untuk informasi selengkapnya tentang server produksi, lihat: {{\field{\*\fldinst{HYPERLINK https://docs.djangoproject.com/en/5.2/ }}{\fldrslt{https://docs.djangoproject.com/en/5.2/\ul0\cf0}}}}\f1\fs22\par
+howto/deployment/\par
+\f0\'ae Catatan\par
+Abaikan peringatan tentang migrasi basis data yang belum diterapkan untuk saat ini; kami akan segera menanganinya.\par
+Setelah server berjalan, kunjungi {{\field{\*\fldinst{HYPERLINK http://127.0.0.1:8000/ }}{\fldrslt{http://127.0.0.1:8000/\ul0\cf0}}}}\f0\fs22  melalui peramban web Anda. Anda akan melihat halaman "Selamat!", dengan roket yang lepas landas. Berhasil!\par
+Anda telah memulai server pengembangan Django, server web ringan yang ditulis murni dengan Python. Kami telah\par
+menyertakan ini dengan Django agar Anda dapat mengembangkan berbagai hal dengan cepat, tanpa harus repot mengonfigurasi server produksi \f1\endash  seperti Apache \endash  hingga Anda siap untuk produksi.\par
+Sekarang saat yang tepat untuk mencatat: jangan gunakan server ini dalam lingkungan yang menyerupai lingkungan produksi. Server ini\par
+hanya ditujukan untuk digunakan saat pengembangan. (Kami bergerak di bidang pembuatan kerangka kerja web, bukan server web.)\par
+(Untuk menyajikan situs di porta yang berbeda, lihat referensi runserver.)\par
+\f0\'ae Pemuatan ulang otomatis runserver\par
+Server pengembangan secara otomatis memuat ulang kode Python untuk setiap permintaan sesuai kebutuhan. Anda tidak perlu\par
+memulai ulang server agar perubahan kode diterapkan. Namun, beberapa tindakan seperti menambahkan berkas tidak memicu\par
+pemulai ulang, jadi Anda harus memulai ulang server dalam kasus ini.\par
+2.3.3 Membuat aplikasi Polls\par
+Setelah lingkungan Anda \f1\endash  sebuah "proyek" \endash  disiapkan, Anda siap untuk mulai bekerja.\par
+Setiap aplikasi yang Anda tulis di Django terdiri dari paket Python yang mengikuti konvensi tertentu. Django\par
+dilengkapi dengan utilitas yang secara otomatis menghasilkan struktur direktori dasar suatu aplikasi, sehingga Anda dapat berfokus\par
+pada penulisan kode daripada membuat direktori.\par
+\f0\'ae Proyek vs. aplikasi\par
+Apa perbedaan antara proyek dan aplikasi? Aplikasi adalah aplikasi web yang melakukan sesuatu \f1\endash\par
+misalnya, sistem blog, basis data catatan publik, atau aplikasi jajak pendapat kecil. Proyek adalah kumpulan konfigurasi\par
+dan aplikasi untuk situs web tertentu. Sebuah proyek dapat berisi beberapa aplikasi. Sebuah aplikasi dapat berada di beberapa proyek.\par
+Aplikasi Anda dapat berada di mana saja di jalur Python Anda. Dalam tutorial ini, kita akan membuat aplikasi jajak pendapat di dalam\par
+folder djangotutorial.\par
+Untuk membuat aplikasi Anda, pastikan Anda berada di direktori yang sama dengan manage.py dan ketik perintah ini:\par
+$ python manage.py startapp polls\par
+Itu akan membuat direktori jajak pendapat, yang tata letaknya seperti ini:\par
+polls/\par
+__init__.py\par
+admin.py\par
+apps.py\par
+migrations/\par
+__init__.py\par
+models.py\par
+tests.py\par
+views.py\par
+Struktur direktori ini akan menampung aplikasi polling.\par
+2.3.4 Menulis tampilan pertama Anda\par
+Mari kita menulis tampilan pertama. Buka berkas polls/views.py dan masukkan kode Python berikut ke dalamnya:\par
+Listing 8: polls/views.py\par
+from django.http import HttpResponse\par
+def index(request):\par
+return HttpResponse("Hello, world. You're at the polls index.")\par
+Ini adalah tampilan paling dasar yang tersedia di Django. Untuk mengaksesnya di peramban, kita perlu memetakannya ke URL - dan untuk ini,\par
+kita perlu mendefinisikan konfigurasi URL, atau singkatnya "URLconf". Konfigurasi URL ini didefinisikan\par
+di dalam setiap aplikasi Django, dan merupakan berkas Python bernama urls.py.\par
+Untuk mendefinisikan URLconf untuk aplikasi polls, buat berkas polls/urls.py dengan konten berikut:\par
+from django.urls import path\par
+from . import views\par
+urlpatterns = [\par
+path("", views.index, name="index"),\par
+]\par
+Direktori aplikasi Anda sekarang akan terlihat seperti:\par
+polls/\par
+__init__.py\par
+admin.py\par
+apps.py\par
+migrations/\par
+__init__.py\par
+models.py\par
+tests.py\par
+urls.py\par
+views.py\par
+Langkah selanjutnya adalah mengonfigurasi URLconf root di proyek mysite agar menyertakan URLconf yang didefinisikan dalam polls.\par
+urls. Untuk melakukannya, tambahkan impor untuk django.urls.include di mysite/urls.py dan masukkan include() di\par
+daftar urlpatterns, sehingga Anda memiliki:\par
+from django.contrib import admin\par
+from django.urls import include, path\par
+urlpatterns = [\par
+path("polls/", include("polls.urls")),\par
+path("admin/", admin.site.urls),\par
+]\par
+Fungsi path() membutuhkan setidaknya dua argumen: route dan view. Fungsi include() memungkinkan referensi URLconf lainnya. Setiap kali Django menemukan include(), ia akan memotong bagian URL yang sesuai hingga titik tersebut dan mengirimkan string yang tersisa ke URLconf yang disertakan untuk diproses lebih lanjut.\par
+Ide di balik include() adalah untuk memudahkan URL plug-and-play. Karena polling berada di URLconf-nya sendiri\par
+(polls/urls.py), polling dapat ditempatkan di bawah \ldblquote /polls/\rdblquote , atau di bawah \ldblquote /fun_polls/\rdblquote , atau di bawah \ldblquote /content/polls/\rdblquote\par
+\f0\par
+}
+ 
