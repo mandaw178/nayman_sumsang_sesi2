@@ -1,0 +1,169 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset1 Segoe UI Symbol;}{\f2\fnil Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\qc\f0\fs22\lang9  Terjemah Django Hal.21-35\par
+
+\pard\sa200\sl276\slmult1 2.4 Menulis Aplikasi Django Pertama Anda, Bagian 2\par
+Tutorial ini dimulai dari akhir Tutorial 1. Kita akan menyiapkan database, membuat model pertama, dan mendapatkan pengenalan singkat tentang situs admin otomatis Django.\par
+
+\pard\sa200\sl240\slmult1\f1\u-10179?\u-9055?\f0  Di mana mendapatkan bantuan\par
+Jika kamu mengalami kesulitan mengikuti tutorial ini, silakan kunjungi bagian Getting Help di FAQ (Frequently Asked Questions).\par
+
+\pard\sa200\sl276\slmult1 2.4.1 Penyiapan Database\par
+Sekarang, buka file mysite/settings.py.\par
+Ini adalah modul Python biasa dengan variabel tingkat modul yang mewakili pengaturan Django.\par
+Secara default, konfigurasi DATABASES menggunakan SQLite.\par
+Jika kamu baru mengenal database atau hanya ingin mencoba Django, ini adalah pilihan termudah \f2\emdash  SQLite sudah termasuk dalam Python, jadi kamu tidak perlu menginstal apa pun.\par
+Namun, jika kamu ingin membuat proyek nyata, sebaiknya gunakan database yang lebih skalabel seperti PostgreSQL, untuk menghindari kerepotan saat beralih database nanti.\par
+Jika kamu ingin menggunakan database lain, lihat detailnya di dokumentasi untuk menyesuaikan pengaturan dan menjalankan databasenya.\par
+Saat kamu mengedit mysite/settings.py, atur TIME_ZONE ke zona waktu kamu.\par
+Perhatikan juga pengaturan INSTALLED_APPS di bagian atas file.\par
+Bagian ini berisi daftar nama semua aplikasi Django yang aktif dalam instance Django kamu.\par
+Aplikasi bisa digunakan di banyak proyek, dan kamu dapat mengemas serta mendistribusikannya agar bisa digunakan orang lain.\par
+Secara default, INSTALLED_APPS berisi aplikasi berikut:\par
+django.contrib.admin \endash  Situs admin. Akan segera kita gunakan.\par
+django.contrib.auth \endash  Sistem autentikasi.\par
+django.contrib.contenttypes \endash  Kerangka kerja tipe konten.\par
+django.contrib.sessions \endash  Kerangka kerja sesi.\par
+django.contrib.messages \endash  Kerangka kerja pesan.\par
+django.contrib.staticfiles \endash  Pengelola file statis.\par
+Aplikasi-aplikasi ini disertakan secara default untuk kemudahan dalam kasus umum.\par
+Beberapa dari aplikasi tersebut memerlukan setidaknya satu tabel database, jadi kita perlu membuat tabel tersebut sebelum bisa digunakan.\par
+Jalankan perintah berikut:\par
+$ python manage.py migrate\par
+Perintah migrate melihat pengaturan INSTALLED_APPS dan membuat tabel database yang diperlukan sesuai konfigurasi di mysite/settings.py, serta migrasi database yang dikirim bersama aplikasi tersebut.\par
+Kamu akan melihat pesan untuk setiap migrasi yang diterapkan.\par
+Jika ingin mengeceknya langsung di database, buka klien database dan jalankan perintah seperti:\par
+PostgreSQL: \\dt\par
+MySQL/MariaDB: SHOW TABLES;\par
+SQLite: .tables\par
+Oracle: SELECT TABLE_NAME FROM USER_TABLES;\par
+\f1\u-10179?\u-9055?\f0  Untuk Para Minimalis\par
+Seperti disebutkan sebelumnya, aplikasi bawaan ini disertakan untuk kasus umum, tetapi tidak semua orang membutuhkannya.\par
+Jika kamu tidak memerlukan beberapa di antaranya, kamu dapat menghapus atau menonaktifkan baris terkait di INSTALLED_APPS sebelum menjalankan migrate.\par
+Perintah migrate hanya akan menjalankan migrasi untuk aplikasi yang terdaftar di INSTALLED_APPS.\par
+2.4.2 Membuat Model\par
+Sekarang kita akan mendefinisikan model \f2\emdash  yaitu tata letak database dengan metadata tambahan.\par
+\f1\u-10179?\u-9055?\f0  Filsafat\par
+Model adalah sumber tunggal dan definitif untuk informasi tentang data kamu.\par
+Model berisi field penting dan perilaku data yang kamu simpan.\par
+Django mengikuti prinsip DRY (Don\rquote t Repeat Yourself) \f2\emdash  tujuan utamanya adalah mendefinisikan data hanya sekali, dan otomatis menghasilkan hal-hal lain darinya.\par
+Termasuk migrasi, yang sepenuhnya diturunkan dari file model kamu \emdash  berbeda dengan Ruby on Rails, di mana migrasi ditulis manual.\par
+Dalam aplikasi polls, kita akan membuat dua model:\par
+Question dan Choice.\par
+Question memiliki teks pertanyaan dan tanggal publikasi.\par
+Choice memiliki teks pilihan dan jumlah suara.\par
+Setiap Choice terkait dengan satu Question.\par
+Edit file polls/models.py agar tampak seperti berikut:\par
+from django.db import models\par
+class Question(models.Model):\par
+    question_text = models.CharField(max_length=200)\par
+    pub_date = models.DateTimeField("date published")\par
+class Choice(models.Model):\par
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)\par
+    choice_text = models.CharField(max_length=200)\par
+    votes = models.IntegerField(default=0)\par
+Penjelasan:\par
+Setiap model direpresentasikan oleh kelas yang menurunkan (subclass) django.db.models.Model.\par
+Setiap variabel kelas merepresentasikan field database.\par
+Misalnya CharField untuk teks, dan DateTimeField untuk tanggal/waktu.\par
+Nama variabel (question_text, pub_date) menjadi nama kolom di database.\par
+Field juga dapat memiliki argumen opsional seperti default, verbose_name, atau max_length.\par
+Perhatikan bahwa hubungan antar model dibuat dengan ForeignKey.\par
+Ini menunjukkan bahwa setiap Choice berhubungan dengan satu Question.\par
+Django mendukung semua jenis relasi umum: many-to-one, many-to-many, dan one-to-one.\par
+2.4.3 Mengaktifkan Model\par
+Potongan kecil kode model ini memberi Django banyak informasi. Dengan itu, Django bisa:\par
+Membuat skema database (perintah CREATE TABLE)\par
+Membuat API Python untuk mengakses objek Question dan Choice\par
+Namun, kita perlu memberi tahu Django bahwa aplikasi polls telah diinstal.\par
+Tambahkan aplikasi polls ke INSTALLED_APPS di mysite/settings.py:\par
+INSTALLED_APPS = [\par
+    "polls.apps.PollsConfig",\par
+    "django.contrib.admin",\par
+    "django.contrib.auth",\par
+    "django.contrib.contenttypes",\par
+    "django.contrib.sessions",\par
+    "django.contrib.messages",\par
+    "django.contrib.staticfiles",\par
+\par
+Lalu jalankan:\par
+$ python manage.py makemigrations polls\par
+Perintah ini memberi tahu Django bahwa kamu membuat perubahan di model dan ingin menyimpannya sebagai migrasi.\par
+Setelah itu, jalankan:\par
+$ python manage.py migrate\par
+Perintah ini akan membuat tabel di database sesuai model kamu.\par
+\par
+2.4.4 Bermain dengan API\par
+Kita akan masuk ke shell interaktif Python:\par
+$ python manage.py shell\par
+Dengan shell ini, kamu dapat berinteraksi langsung dengan database menggunakan API Django.\par
+Contoh:\par
+>>> from django.utils import timezone\par
+>>> from polls.models import Question\par
+>>> q = Question(question_text="Apa yang baru?", pub_date=timezone.now())\par
+>>> q.save()\par
+>>> Question.objects.all()\par
+<QuerySet [<Question: Question object (1)>]>\par
+\par
+\par
+Hasil <Question: Question object (1)> tidak informatif, jadi kita tambahkan metode __str__() agar lebih jelas.\par
+Edit polls/models.py:\par
+class Question(models.Model):\par
+    # ...\par
+    def __str__(self):\par
+        return self.question_text\par
+\par
+class Choice(models.Model):\par
+    # ...\par
+    def __str__(self):\par
+        return self.choice_text\par
+\par
+Sekarang tampilannya akan seperti:\par
+<QuerySet [<Question: Apa yang baru?>]>\par
+\par
+Kita juga bisa menambahkan metode kustom:\par
+import datetime\par
+from django.utils import timezone\par
+class Question(models.Model):\par
+    # ...\par
+    def was_published_recently(self):\par
+        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)\par
+\par
+2.4.5 Mengenal Django Admin\par
+\f1\u-10179?\u-9055?\f0  Filsafat\par
+Membuat situs admin untuk menambah, mengubah, atau menghapus konten adalah pekerjaan berulang yang tidak memerlukan banyak kreativitas \f2\emdash  jadi Django mengotomatiskan semuanya.\par
+\par
+Admin ditujukan untuk pengelola situs, bukan pengunjung.\par
+Membuat pengguna admin\par
+\par
+Jalankan:\par
+$ python manage.py createsuperuser\par
+Masukkan:\par
+Username: admin\par
+Email address: admin@example.com\par
+Password: ********\par
+Menjalankan server pengembangan\par
+Jalankan:\par
+$ python manage.py runserver\par
+Buka browser ke:\par
+{{\field{\*\fldinst{HYPERLINK http://127.0.0.1:8000/admin/ }}{\fldrslt{http://127.0.0.1:8000/admin/\ul0\cf0}}}}\f2\fs22\par
+Login dengan akun admin yang baru dibuat.\par
+Menambahkan aplikasi polls ke admin\par
+Buka polls/admin.py dan ubah menjadi:\par
+from django.contrib import admin\par
+from .models import Question\par
+admin.site.register(Question)\par
+\par
+Sekarang, di halaman admin kamu akan melihat menu Questions.Kamu bisa menambah, mengedit, atau menghapus pertanyaan langsung dari antarmuka web.\par
+Ringkasan\par
+Langkah-langkah utama bagian ini:\par
+Konfigurasikan database dan jalankan migrate.\par
+Buat model di polls/models.py.\par
+Tambahkan aplikasi polls ke INSTALLED_APPS.\par
+Jalankan makemigrations dan migrate.\par
+Coba API interaktif Django.\par
+Buat superuser.\par
+Daftarkan model di admin.py dan eksplor halaman admin Django.\f0\lang1033 0\lang9\par
+}
+ 
